@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import { setBooks } from './store/actions/books';
+
+import GlobalStyle from './global-styles';
+
+import api from './services/api';
+
+import Routes from './routes';
+
+class App extends Component {
+
+  async loadBooks() {
+    return api.get('comics')
+      .then(response => this.props.setBooksState(response.data))
+      .catch(e => console.log(e));
+  }
+
+  async componentDidMount() {
+    await this.loadBooks();
+  }
+
+  render() {
+    return (
+      <>
+        <GlobalStyle />
+        <Routes />
+      </>
+    );
+  }
 }
 
-export default App;
+const mapDispatchToProps = dispatch => {
+  return {
+    setBooksState: (books) => dispatch(setBooks(books))
+  }
+}
+export default connect(null, mapDispatchToProps)(App);
